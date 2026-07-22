@@ -25,10 +25,10 @@ print(df.duplicated().sum()) #no duplicates
 ### Text columns
 print(df.columns)
 
-text_columns = ['type', 'title', 'director', 'cast', 'country', 'rating', 'duration', 'listed_in', 'description']
+text_columns = ['type', 'type', 'title', 'director', 'cast', 'country', 'rating', 'duration', 'listed_in', 'description']
 
 for col in text_columns:
-    df[col] = df[col].str.strip()
+    df[col] = df[col].str.strip().str.lower().str.replace(' ', '_')
 
 ### Date
 df['date_added'] = pd.to_datetime(df['date_added'], errors='coerce')
@@ -48,3 +48,12 @@ negavite_check = df.loc[df['age_of_show'] < 0, col_to_check]
 
 ## Handling this values
 df.loc[df['age_of_show'] < 0, 'age_of_show'] = np.nan
+
+### Time handling
+df['duration_value'] = df['duration'].str.extract(r'(\d+)', expand=False)
+df['duration_value'] = pd.to_numeric(df['duration_value'], errors='coerce')
+
+# print(df['type'].unique())
+df['movie_duration_min'] = np.where(df['type'] =='movie', df['duration_value'], np.nan)
+df['tv_seasons'] = np.where(df['type'] =='tv_Show', df['duration_value'], np.nan)
+
